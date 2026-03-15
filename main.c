@@ -1,84 +1,112 @@
-#include <stdio.h>
 #include "matrix.h"
+#include "utils.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-int main()
-{
+
+int main() {
     int a[10][10], b[10][10], result[10][10];
-    int r1,c1,r2,c2;
+    float inverseResult[10][10];
+    int r1, c1, r2, c2;
     int choice;
-    int det;
 
-    printf("Enter rows and columns of Matrix A: ");
-    scanf("%d %d",&r1,&c1);
+    clearScreen();
+    printf("╔══════════════════════════╗\n");
+    printf("║   Welcome to MatrixCalc  ║\n");
+    printf("╚══════════════════════════╝\n");
 
-    printf("Enter elements of Matrix A:\n");
-    inputMatrix(a,r1,c1);
+    while (1) {
 
-    printf("\n1. Addition");
-    printf("\n2. Subtraction");
-    printf("\n3. Multiplication");
-    printf("\n4. Transpose");
-    printf("\n5. Determinant");
-    printf("\nEnter choice: ");
-    scanf("%d",&choice);
+        printMenu();
+        scanf("%d", &choice);
 
-    if(choice==1 || choice==2 || choice==3)
-    {
-        printf("Enter rows and columns of Matrix B: ");
-        scanf("%d %d",&r2,&c2);
-
-        printf("Enter elements of Matrix B:\n");
-        inputMatrix(b,r2,c2);
-    }
-
-    if(choice==1)
-    {
-        addMatrix(a,b,result,r1,c1);
-        displayMatrix(result,r1,c1);
-    }
-
-    else if(choice==2)
-    {
-        subtractMatrix(a,b,result,r1,c1);
-        displayMatrix(result,r1,c1);
-    }
-
-    else if(choice==3)
-    {
-        multiplyMatrix(a,b,result,r1,c1,c2);
-        displayMatrix(result,r1,c2);
-    }
-
-    else if(choice==4)
-    {
-        transposeMatrix(a,result,r1,c1);
-        printf("Transpose Matrix:\n");
-        displayMatrix(result,c1,r1);
-    }
-
-    else if(choice==5)
-    {
-        if(r1==2 && c1==2)
-        {
-            det = determinant2x2(a);
-            printf("Determinant = %d\n",det);
+        if (choice == 0) {
+            clearScreen();
+            printf("\nGoodbye!\n");
+            break;
         }
 
-        else if(r1==3 && c1==3)
-        {
-            det = determinant3x3(a);
-            printf("Determinant = %d\n",det);
+        clearScreen();
+
+        // operations that need matrix A only
+        if (choice >= 1 && choice <= 6) {
+            inputMatrixPrompt((int *)a, &r1, &c1, 'A');
         }
 
-        else
-        {
-            printf("Determinant only implemented for 2x2 or 3x3 matrix\n");
+        // operations that need matrix B
+        if (choice == 1 || choice == 2 || choice == 3) {
+            inputMatrixPrompt((int *)b, &r2, &c2, 'B');
         }
-    }
 
-    else
-    {
-        printf("Invalid choice\n");
+        switch (choice) {
+
+        case 1:
+            if (r1 != r2 || c1 != c2) {
+                printf("\n[!] Matrices must be the same size for addition.\n");
+                break;
+            }
+            addMatrix((int *)a, (int *)b, (int *)result, r1, c1);
+            printf("\nResult:\n");
+            displayMatrix((int *)result, r1, c1);
+            break;
+
+        case 2:
+            if (r1 != r2 || c1 != c2) {
+                printf("\n[!] Matrices must be the same size for subtraction.\n");
+                break;
+            }
+            subtractMatrix((int *)a, (int *)b, (int *)result, r1, c1);
+            printf("\nResult:\n");
+            displayMatrix((int *)result, r1, c1);
+            break;
+
+        case 3:
+            if (c1 != r2) {
+                printf("\n[!] Columns of A must equal rows of B for multiplication.\n");
+                break;
+            }
+            multiplyMatrix((int *)a, (int *)b, (int *)result, r1, c1, c2);
+            printf("\nResult:\n");
+            displayMatrix((int *)result, r1, c2);
+            break;
+
+        case 4:
+            transposeMatrix((int *)a, (int *)result, r1, c1);
+            printf("\nTranspose:\n");
+            displayMatrix((int *)result, c1, r1);
+            break;
+
+        case 5:
+            if (r1 != c1) {
+                printf("\n[!] Determinant requires a square matrix.\n");
+                break;
+            }
+            printf("\nDeterminant = %d\n", determinant((int *)a, r1));
+            break;
+
+        case 6:
+            if (r1 != c1) {
+                printf("\n[!] Inverse requires a square matrix.\n");
+                break;
+            }
+            if (determinant((int *)a, r1) == 0) {
+                printf("\n[!] Matrix is singular (determinant = 0), inverse does not exist.\n");
+                break;
+            }
+            inverseMatrix(r1, c1, (int *)a, (float *)inverseResult);
+            printf("\nInverse:\n");
+            displayMatrixFloat((float *)inverseResult, r1, c1);
+            break;
+
+        default:
+            printf("\n[!] Invalid choice, please try again.\n");
+        }
+
+        // pause so user can read result before screen clears
+        printf("\n\nPress Enter to continue...");
+        getchar();
+        getchar();
+        clearScreen();
     }
 
     return 0;

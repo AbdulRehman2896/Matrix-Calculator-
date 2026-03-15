@@ -1,16 +1,21 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-void inputMatrix(int matrix[10][10], int row, int col);
-void displayMatrix(int matrix[10][10], int row, int col);
+// utility functions
+void inputMatrix(int *matrix, int row, int col);
+void displayMatrix(int *matrix, int r, int c);
+void displayMatrixFloat(float *matrix, int r, int c);
 
-void addMatrix(int a[10][10], int b[10][10], int result[10][10], int row, int col);
-void subtractMatrix(int a[10][10], int b[10][10], int result[10][10], int row, int col);
-void multiplyMatrix(int a[10][10], int b[10][10], int result[10][10], int r1, int c1, int c2);
+// matrix operations
+void addMatrix(int *a, int *b, int *result, int row, int col);
+void subtractMatrix(int *a, int *b, int *result, int row, int col);
+void multiplyMatrix(int *a, int *b, int *result, int r1, int c1, int c2);
+void transposeMatrix(int *matrix, int *result, int row, int col);
+int  determinant(int *mat, int n);
 
-void transposeMatrix(int matrix[10][10], int result[10][10], int row, int col);
-
-int determinant2x2(int matrix[10][10]);
-int determinant3x3(int matrix[10][10]);
+// inverse of a matrix
+// A^-1 = 1/|A| * Adjoint(A), only square matrices (2x2, 3x3)
+// minor, cofactor, adjoint are static (internal use only, not exposed)
+void inverseMatrix(int r, int c, int *mat, float *inverseMat);
 
 #endif
